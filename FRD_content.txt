@@ -1,0 +1,300 @@
+
+
+
+FRONTEND REQUIREMENTS DOCUMENT
+Jira Clone — Phase 1
+React + TypeScript  |  Tailwind CSS  |  @dnd-kit  |  Axios
+Backend: Spring Boot on localhost:8080
+
+
+
+
+This Frontend Requirements Document (FRD) is the complete specification for building the React frontend of the Jira Clone Phase 1 application. It defines every screen, every component, every API call, every state shape, and every error handling behaviour so that a developer (or an AI tool like Antigravity) can implement the entire frontend without ambiguity.
+
+The backend is a Spring Boot REST API running on http://localhost:8080. The frontend is a React Single-Page Application (SPA) running on http://localhost:3000. The two communicate exclusively over HTTP/JSON using JWT for authentication.
+
+1.1 What This Document Covers
+Complete project folder structure with every file explained
+All 5 screens: Login, Register, Projects List, Kanban Board, Issue Detail
+Every React component with its props, state, and rendering contract
+Every API call: which hook calls it, what data it sends, what it does with the response
+Full error handling strategy: what to show when the backend is down, returns an error, or returns unexpected data
+JWT authentication: storage, refresh, expiry, logout
+Drag-and-drop Kanban board implementation with @dnd-kit
+Loading states for every async operation
+Form validation rules matching the backend's validation rules
+TypeScript type definitions for every API response
+
+1.2 What Is Out of Scope
+Phase 2 features: sprints, backlog, comments, file attachments, user roles
+Mobile responsiveness (Phase 1 targets desktop browsers at 1280px+)
+Internationalisation (English only)
+Dark mode (Phase 1 uses light mode only)
+Unit tests and integration tests (separate test spec document)
+
+
+
+
+Every file is listed below with its purpose. Do not deviate from this structure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route: /login. Accessible to unauthenticated users only. If the user is already authenticated (valid token in localStorage), redirect immediately to /projects.
+
+Layout
+Centered card on a light gray background (#F9FAFB)
+Card: white, rounded-xl, shadow-md, max-width 400px
+App logo / name 'JiraClone' at the top in teal
+Heading: 'Sign in to your account'
+Fields: Email, Password
+Submit button: full-width, teal, 'Sign In'
+Link at bottom: 'Don’t have an account? Register'
+
+Form Validation (client-side, before API call)
+Email: required, must match email format — show 'Please enter a valid email address'
+Password: required, minimum 1 character — show 'Password is required'
+Show inline red error text under each field on blur or submit attempt
+
+API Call
+POST /api/auth/login with { email, password }
+On success (200): call auth.store.login(response), redirect to /projects
+Show loading spinner inside the button while request is in flight; disable button
+
+Error Handling
+
+
+
+
+
+Route: /register. Same layout as Login. If already authenticated, redirect to /projects.
+
+Fields
+Full Name — required, min 1 character
+Email — required, valid email format
+Password — required, minimum 8 characters — show password strength indicator
+Confirm Password — must match Password field — validate on blur
+
+Form Validation (client-side)
+Name: required — 'Name is required'
+Email: valid format — 'Please enter a valid email address'
+Password: min 8 chars — 'Password must be at least 8 characters'
+Confirm Password: must equal Password — 'Passwords do not match'
+
+API Call
+POST /api/auth/register with { name, email, password }
+On success (201): call auth.store.login(response), show success toast 'Account created!', redirect to /projects
+
+Error Handling
+
+
+
+
+Route: /projects. Requires authentication. If not authenticated, redirect to /login. This is the home screen after login.
+
+Layout
+AppShell wrapper: left Sidebar + top Topbar + main content area
+Page heading: 'My Projects' with a '+ New Project' button (teal, top-right)
+Project cards in a responsive CSS grid (3 columns at 1280px, 2 at 900px)
+Each ProjectCard shows: project name (bold), key badge (e.g. 'MFP'), description (truncated), issue count, creation date
+Each card has a 3-dot menu (kebab) with options: 'Edit' and 'Delete'
+
+Loading State
+Show 3 skeleton placeholder cards (animated gray blocks) while GET /api/projects is in flight
+
+Empty State
+If user has no projects: show EmptyState component with icon and message 'No projects yet. Create your first project to get started.' and a '+ New Project' button
+
+Create Project Modal
+Triggered by the '+ New Project' button
+Uses shadcn Dialog component
+Fields: Name (required), Key (required, 2-10 uppercase letters, live-converted to uppercase as user types), Description (optional, textarea)
+Submit: POST /api/projects — on success: close modal, append card to grid, show toast 'Project created!'
+
+Edit Project Modal
+Pre-populates fields with existing project data
+Key field is NOT editable (locked after creation, show as disabled input with explanation)
+Submit: PUT /api/projects/{id} — on success: update card in grid, show toast 'Project updated!'
+
+Delete Project
+Show ConfirmDialog: 'Delete project [name]? This will also delete all [N] issues inside it. This cannot be undone.'
+On confirm: DELETE /api/projects/{id} — on success: remove card from grid, show toast 'Project deleted'
+
+Error Handling for All Project Actions
+
+
+
+
+
+Route: /projects/:projectId/board. Requires authentication. This is the primary working screen of the application.
+
+Layout
+AppShell wrapper
+Page header: project name (large), project key badge, '+ Create Issue' button (top-right)
+4 columns side by side: TO DO | IN PROGRESS | IN REVIEW | DONE
+Each column has: a header with the column name and a badge showing the count of issues in that column
+Each column renders a scrollable list of IssueCard components
+Columns are equal width and fill the viewport height
+
+Loading State
+Show skeleton placeholder cards (2-3 per column) while the board data loads
+Disable drag-and-drop during loading
+
+Drag-and-Drop Implementation
+Use DndContext from @dnd-kit/core wrapping the entire KanbanBoard
+Each column is a droppable zone using useDroppable with id = column status string
+Each IssueCard is a draggable item using useDraggable with id = issue.id
+On drag end (onDragEnd event): identify the source column (active.data.current.status) and the destination column (over.id)
+If destination is different from source: call board.store.moveIssue() for optimistic update, then call PATCH /api/projects/{projectId}/issues/{issueId}/status
+If PATCH fails: call board.store.revertMove() and show toast error 'Could not move issue. Please try again.'
+While the dragged card is being held, apply a shadow and slight scale transform (CSS: scale(1.03), shadow-lg)
+
+Create Issue Modal
+Triggered by the '+ Create Issue' button OR a '+ Add issue' link at the bottom of each column
+Fields: Title (required, text input), Description (optional, textarea), Type (select: Bug / Task / Story), Priority (select: Lowest / Low / Medium / High / Highest, defaults to Medium), Assignee (optional select dropdown)
+Assignee dropdown: populated by GET /api/projects/{projectId}/members — if this endpoint returns an error, the dropdown shows 'Could not load members' and defaults to Unassigned
+Submit: POST /api/projects/{projectId}/issues — on success: add to TO DO column via board.store.addIssue(), close modal, show toast 'Issue created'
+
+Error Handling
+
+
+
+
+Triggered by clicking any IssueCard. Opens as a large modal (shadcn Dialog, max-width 800px) overlaid on the board. Does NOT navigate to a new page.
+
+Layout — Left Column (60% width)
+Issue key (e.g. MFP-3) as small teal badge — not editable
+Title — inline editable: clicking it transforms it into a text input; clicking away saves (PUT /api/projects/{projectId}/issues/{issueId})
+Description — inline editable textarea; same save-on-blur behaviour
+'Delete Issue' button at the bottom left (only shown if current user is the reporter or project owner)
+
+Layout — Right Column (40% width)
+Status — shadcn Select dropdown; changing it calls PATCH /status immediately
+Type — shadcn Select (Bug / Task / Story); changing it calls PUT update immediately
+Priority — shadcn Select (Lowest to Highest); changing it calls PUT update immediately
+Assignee — shadcn Select showing member list; changing it calls PATCH /assignee immediately
+Reporter — read-only, shows name + avatar initial
+Created — formatted date (e.g. 'May 20, 2026')
+Updated — formatted date
+
+Auto-Save Behaviour
+Title and description save on blur (when the user clicks away)
+While saving: show a small 'Saving...' indicator next to the field
+On success: show 'Saved' for 2 seconds then hide
+On failure: show red 'Save failed' and restore the old value
+
+Delete Issue Flow
+'Delete Issue' button opens ConfirmDialog: 'Delete this issue? This cannot be undone.'
+On confirm: DELETE /api/projects/{projectId}/issues/{issueId}
+On success: close modal, call board.store.removeIssue(), show toast 'Issue deleted'
+
+Error Handling
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Every API call the frontend makes, which component/hook initiates it, and exactly what to do on each error code.
+
+
+
+This section is critical. The frontend must NEVER crash when the backend has a problem. Every possible failure mode is covered below.
+
+8.1 Error Classification
+
+8.2 The errorParser.ts Utility
+Every catch block in the app calls parseError(error) to convert any error into a displayable string. This function must handle all these cases:
+
+8.3 The Axios Response Interceptor (Full Implementation)
+
+8.4 BackendDownBanner Component
+This is the most important UI safety net. Whenever a page cannot load its data because the backend is unreachable, render BackendDownBanner instead of leaving the user on a broken, empty screen.
+Colour: amber/yellow background (#FEF3C7), dark amber text
+Icon: warning triangle (from lucide-react)
+Title: 'Cannot Connect to Server'
+Message: 'The backend server is not responding. Make sure the Spring Boot application is running at http://localhost:8080 and that CORS is configured correctly.'
+Button: 'Retry' — calls window.location.reload()
+This component is used on: Projects page, Board page, anywhere a primary data fetch fails with a network error
+
+
+
+9.1 Route Definitions
+
+9.2 PrivateRoute Implementation
+
+9.3 PublicRoute Implementation
+
+9.4 JWT Token Expiry Handling
+On app startup (main.tsx): call auth.store.initFromStorage()
+initFromStorage reads the token from localStorage, calls tokenUtils.isTokenExpired(token)
+If expired: call logout() silently — no error shown, just redirect to login on next navigation
+If valid: restore isAuthenticated = true and user data from the token payload
+
+
+10.1 Colour Palette
+
+10.2 Typography
+
+10.3 Spacing & Sizing
+
+
+All forms validate client-side before making an API call. Validation runs on submit AND on field blur. Errors display in red text immediately below the relevant input field.
+
+
+
+Build in this exact order — each step produces something testable.
+
+Set up Vite + React + TypeScript project, install all dependencies from Section 2
+Add Tailwind CSS and configure tailwind.config.ts
+Create all TypeScript types (src/types/) — this has no dependencies
+Create src/utils/tokenUtils.ts and src/utils/errorParser.ts
+Create src/api/axios.ts with both interceptors
+Create src/api/auth.api.ts, project.api.ts, issue.api.ts (thin wrappers only)
+Create src/store/auth.store.ts — test initFromStorage in isolation
+Create src/store/board.store.ts
+Create src/constants/routes.ts and api.constants.ts
+Build shared UI components: LoadingSpinner, ErrorBanner, BackendDownBanner, EmptyState, ConfirmDialog
+Build LoginPage and RegisterPage — verify full auth flow works end-to-end with the backend
+Add routing (App.tsx) with PrivateRoute and PublicRoute — verify redirects work
+Build AppShell, Sidebar, Topbar
+Build ProjectsPage with useProjects hook — verify list, create, delete all work
+Build KanbanBoard skeleton — 4 empty columns rendering without drag-and-drop
+Add IssueCard rendering (static, no drag yet) — verify board loads and shows issues
+Wire up @dnd-kit drag-and-drop — verify optimistic updates and PATCH /status call
+Build CreateIssueModal — verify issue creation and board update
+Build IssueDetailModal — verify all inline edits and delete
+Final pass: test all error states by stopping the backend and triggering each scenario
+
+
+13.1 .env.development
+13.2 .env.production
+13.3 Using in axios.ts
+
+
+
+
+
+
+— End of Document —

@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/smartep?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: Pav@n123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME:mineemail100@gmail.com}
+    password: ${SPRING_MAIL_PASSWORD:klqzyfkcbntlftvr}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  secret: your-256-bit-secret-key-minimum-32-chars
+  expiration: 86400000   # 24 hours in milliseconds
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:3000
