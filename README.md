@@ -197,7 +197,7 @@ Below is the modern dashboard UI of the application featuring charts, task board
 
 
 # 10. Flow chart
-```mermaid
+```
 
                       Smart Employee & Project Management System
 
