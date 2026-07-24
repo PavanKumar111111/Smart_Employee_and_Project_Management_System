@@ -56,25 +56,35 @@ To access the system, you can use the default Admin account or register your own
   Run the following commands in your terminal to set up and download all dependencies:
 
   1. Clone the repository
+        ``` 
         git clone https://github.com/PavanKumar111111/Smart_Employee_and_Project_Management_System.git
         cd Smart_Employee_and_Management_System
 
+        ```
   2. Setup the MySQL database schema
+        ```
         mysql -u root -p < schema.sql
+      ```
 
   3. Download backend dependencies and compile
+    ```
         cd smartep
         ./mvnw.cmd clean compile
-
+    ```
   4. Download frontend node packages
+    ```
         cd ../frontend
         npm install
+        ```
 
 **Via Docker (One-Command Deployment)**
   If you prefer running the entire stack inside containers without installing JDK or Node.js locally:
 
   1. Navigate to the project root and start all services
+    ```
         docker compose up --build -d
+
+        ```
 
 
 --------------------------------------------------------------------------------------------------------------
@@ -272,12 +282,13 @@ Smart_Employee_and_Project_Management_System/
 │   └── schema.sql
 │── postman/
 │   └── Smart_Employee_Project_API.postman_collection.json
-│── docs/
-│   ├── System_Architecture.pdf
-│   ├── ER_Diagram.png
-│   ├── Authentication_Flowchart.png
-│   └── Employee_Project_Flowchart.png
-│── screenshots/
+│── frontend    // folder contains frontend
+|── smartep     // folder contains backend
+│── System_Architecture.pdf
+│── ER_Diagram.png
+│── Authentication_Flowchart.png
+│── Employee_Project_Flowchart.png
+│── assets/
 │   ├── login.png
 │   ├── email-verification.png
 │   ├── admin-dashboard.png
@@ -290,6 +301,8 @@ Smart_Employee_and_Project_Management_System/
 │   ├── employee-projects.png
 │   ├── employee-creation.png
 │   └── impersonation.png
+|── docker-compose.yml
+
 
 ```
 
