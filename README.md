@@ -62,29 +62,33 @@ To access the system, you can use the default Admin account or register your own
 
         ```
   2. Setup the MySQL database schema
-        ```
+
+      ```
         mysql -u root -p < schema.sql
       ```
 
-  3. Download backend dependencies and compile
+  4. Download backend dependencies and compile
+   
     ```
         cd smartep
         ./mvnw.cmd clean compile
     ```
   4. Download frontend node packages
+
     ```
         cd ../frontend
         npm install
-        ```
+    ```
 
 **Via Docker (One-Command Deployment)**
   If you prefer running the entire stack inside containers without installing JDK or Node.js locally:
 
   1. Navigate to the project root and start all services
+   
     ```
         docker compose up --build -d
 
-        ```
+     ```
 
 
 --------------------------------------------------------------------------------------------------------------
@@ -131,7 +135,7 @@ Below is the modern dashboard UI of the application featuring charts, task board
 
 ## Admin dashboard 
 
-![admin dashboard in Application](assets/admin_dashboard.png.png)
+![admin dashboard in Application](assets/admin_dashboard.png)
 
 ## Admin dashboard night mode
 
@@ -155,7 +159,7 @@ Below is the modern dashboard UI of the application featuring charts, task board
 
 ## Employee dashboard
 
-![employee dashboard in Application](assets/employee_dashboard.png.png)
+![employee dashboard in Application](assets/employee_dashboard.png)
 
 ## employee projects
 
@@ -188,7 +192,7 @@ Below is the modern dashboard UI of the application featuring charts, task board
 # 9.1 Database Entity Relationship (ER) Diagram
 
 
-![Relational Database Schema and Entity Relationships](Database_ER_Diag.png)
+![Relational Database Schema and Entity Relationships](Databse_ER_Diag.png)
 
 
 
