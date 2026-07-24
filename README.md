@@ -197,7 +197,7 @@ Below is the modern dashboard UI of the application featuring charts, task board
 
 
 # 10. Flow chart
-
+```mermaid
 
                       Smart Employee & Project Management System
 
@@ -258,84 +258,40 @@ Below is the modern dashboard UI of the application featuring charts, task board
                      │ Audit Logs              │
                      └─────────────────────────┘
 
+```
+
+
 
 --------------------------------------------------------------------------------------------------------------
 
 # 11. Folder structure
-
-Smart_Employee_and_Management_System/
-│
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── api/
-│   │   ├── assets/
-│   │   ├── components/
-│   │   │   ├── auth/
-│   │   │   ├── board/
-│   │   │   ├── issue/
-│   │   │   ├── layout/
-│   │   │   ├── profile/
-│   │   │   ├── projects/
-│   │   │   └── ui/
-│   │   ├── constants/
-│   │   ├── hooks/
-│   │   ├── lib/
-│   │   ├── pages/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── package.json
-│   ├── vite.config.js
-│   └── eslint.config.js
-│
-├── smartep/                        # Spring Boot Backend
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/
-│   │   │   │   └── com/smartep/
-│   │   │   │       ├── audit/
-│   │   │   │       ├── config/
-│   │   │   │       ├── dashboard/
-│   │   │   │       ├── employee/
-│   │   │   │       ├── issue/
-│   │   │   │       ├── project/
-│   │   │   │       ├── report/
-│   │   │   │       ├── security/
-│   │   │   │       ├── shared/
-│   │   │   │       └── SmartEpApplication.java
-│   │   │   └── resources/
-│   │   │       ├── application.yml
-│   │   │       ├── static/
-│   │   │       └── templates/
-│   │   └── test/
-│   ├── Dockerfile
-│   ├── pom.xml
-│   └── mvnw
-│
-├── assets/                         # Application Screenshots
+```
+Smart_Employee_and_Project_Management_System/
+│── README.md
+│── database/
+│   └── schema.sql
+│── postman/
+│   └── Smart_Employee_Project_API.postman_collection.json
+│── docs/
+│   ├── System_Architecture.pdf
+│   ├── ER_Diagram.png
+│   ├── Authentication_Flowchart.png
+│   └── Employee_Project_Flowchart.png
+│── screenshots/
 │   ├── login.png
-│   ├── admin_dashboard.png
-│   ├── employee_dashboard.png
-│   ├── employee_creation.png
-│   ├── admin_projects.png
-│   ├── employee_projects.png
-│   ├── admin_reports.png
-│   ├── impersonation.png
-│   └── email_verification.png
-│
-├── diagrams/
-│   ├── Application_Architecture.png
-│   ├── Authentication_Auth.png
-│   ├── Databse_ER_Diag.png
-│   └── emp_proj_management.png
-│
-├── docker-compose.yml
-├── README.md
-└── FRD_content.txt
+│   ├── email-verification.png
+│   ├── admin-dashboard.png
+│   ├── admin-dashboard-dark.png
+│   ├── employees.png
+│   ├── projects.png
+│   ├── reports.png
+│   ├── project-creation.png
+│   ├── employee-dashboard.png
+│   ├── employee-projects.png
+│   ├── employee-creation.png
+│   └── impersonation.png
 
+```
 
 --------------------------------------------------------------------------------------------------------------
 
